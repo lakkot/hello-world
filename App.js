@@ -23,10 +23,6 @@ export default class HelloWorld extends Component {
     };
   };
 
-  // alert the user input
-  alertMyText (input = []) {
-    Alert.alert(input.name);
-  }
 
   render() {
     return (

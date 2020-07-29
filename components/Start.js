@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, Button, StyleSheet, ImageBackground } from 'react-native';
+import { View, Text, Button, StyleSheet, ImageBackground, TouchableOpacity } from 'react-native';
 import { TextInput } from 'react-native-gesture-handler';
 
 const backgroundImage = require('../img/Background_Image.png')
@@ -17,6 +17,7 @@ export default class Home extends React.Component {
     return (
       <ImageBackground source={backgroundImage} style={styles.image}>
         <View style={styles.container}>
+
           <View style={styles.box}>
             <TextInput 
               style={styles.input}
@@ -27,39 +28,32 @@ export default class Home extends React.Component {
             <View style={styles.colors}>
               <Text style={{color: '#474056'}}>Choose background color</Text>
               <View style={styles.balls}>
-                <View style={styles.colorBall} backgroundColor={'#757083'}>
-                  <Button 
-                    title={''}
-                    onPress={ () => this.setState({color: '#757083'})}
+                  <TouchableOpacity 
+                      style={[styles.colorBall, styles.color1]} 
+                      onPress={ () => this.setState({color: '#757083'})}
                   />
-                </View>
-                <View style={styles.colorBall} backgroundColor={'#474056'}>
-                  <Button 
-                      title={''}
+                  <TouchableOpacity 
+                      style={[styles.colorBall, styles.color2]} 
                       onPress={ () => this.setState({color: '#474056'})}
                     />
-                </View>
-                <View style={styles.colorBall} backgroundColor={'#8A95A5'}>
-                  <Button 
-                      title={''}
+                  <TouchableOpacity 
+                      style={[styles.colorBall, styles.color3]} 
                       onPress={ () => this.setState({color: '#8A95A5'})}
                     />
-                </View>
-                <View style={styles.colorBall} backgroundColor={'#B9C6AE'}>
-                  <Button 
-                      title={''}
+                  <TouchableOpacity 
+                      style={[styles.colorBall, styles.color4]} 
                       onPress={ () => this.setState({color: '#B9C6AE'})}
                     />
-                </View>
               </View>
             </View>
-            <View style={styles.okButton} >
-              <Button
-                color="#FFFFFF"
+              <TouchableOpacity
+                style={styles.button}
+                background='none'
                 title="Open Chat"
                 onPress={() => this.props.navigation.navigate('Chat', { name: this.state.name, color: this.state.color})}
-              />
-            </View>
+              >
+                <Text  style={styles.buttonText}>Open Chat</Text>
+              </TouchableOpacity>
           </View> 
         </View>
       </ImageBackground>
@@ -117,15 +111,31 @@ const styles = StyleSheet.create({
     marginTop: 10,
     marginRight: 25,
   },
-  okButton: {
+  color1: {
+    backgroundColor: '#757083'
+  },  
+  color2: {
+    backgroundColor: '#474056'
+  },  
+  color3: {
+    backgroundColor: '#8A95A5'
+  },  
+  color4: {
+    backgroundColor: '#B9C6AE'
+  },
+  button: {
+    width: '88%',
+    height: 60,
+    alignItems: 'center',
+    justifyContent: 'center',
     fontSize: 16,
-    fontWeight: '600',
+    fontWeight: "600",
     color: '#FFFFFF',
     backgroundColor: '#757083',
     width: '88%',
-    marginBottom: 24,
-    height: 50,
-    width: '88%',
-    justifyContent: 'center'
-},
+    marginBottom: 30
+  },
+  buttonText: {
+    color: '#FFFFFF',
+  }
 })

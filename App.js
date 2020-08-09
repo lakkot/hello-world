@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import { StyleSheet, View, TextInput, Text, Button, Alert, ScrollView, FlatList } from 'react-native';
 
-const firebase = require('firebase');
-require('firebase/firestore');
+//const firebase = require('firebase');
+//require('firebase/firestore');
 
 // import the screens
 import Home from './components/Start';
@@ -23,33 +23,11 @@ export default class HelloWorld extends Component {
     super()
     this.state = {
       name: '',
-      lists: [],
-      user: {
-        uid: '8fVbXZs4cnXPRq8zY86X2PUHSE42',
-        name: '',
-      },
-      uid: '8fVbXZs4cnXPRq8zY86X2PUHSE42',
     };
     
-    const firebaseConfig = {
-      apiKey: "AIzaSyBuY5bi4m_iDquRm4SGJ6ONGMw6xuYkLOA",
-      authDomain: "my-project-1530093055040.firebaseapp.com",
-      databaseURL: "https://my-project-1530093055040.firebaseio.com",
-      projectId: "my-project-1530093055040",
-      storageBucket: "my-project-1530093055040.appspot.com",
-      messagingSenderId: "404822874074",
-      appId: "1:404822874074:web:59ebf927e425dff38752e3",
-      measurementId: "G-2FR2JSWQSS"
-    }
-  
-  if (!firebase.apps.length){
-    firebase.initializeApp(firebaseConfig);
-    };
-  this.referenceShoppingLists = firebase.firestore().collection('shoppinglists').doc('list2');
-  this.referenceShoppinglistUser = firebase.firestore().collection('shoppinglists').where("uid", "==", this.state.uid);
-  
+    
   };
-
+/*
   componentDidMount() {
     this.referenceShoppingLists = firebase.firestore().collection('shoppinglists');
     //this.unsubscribe = this.referenceShoppingLists.onSnapshot(this.onCollectionUpdate);
@@ -74,8 +52,8 @@ export default class HelloWorld extends Component {
      //this.unsubscribe();
      this.unsubscribeListUser();
   }
-  
-
+  */
+/*
  onCollectionUpdate = (querySnapshot) => {
   const lists = [];
   // go through each document
@@ -99,27 +77,23 @@ addList() {
     uid: this.state.uid,
   });
 }
-
+*/
   render() {
     return (
-<View style={styles.container}>
-
-<Text>{this.state.loggedInText}</Text>
-
-<Text style={styles.text}>All Shopping lists</Text>
-<FlatList
-    data={this.state.lists}
-    renderItem={({ item }) => 
-      <Text style={styles.item}>{item.name}: {item.items}</Text>}
-  />
-
-<Button 
-  onPress={() => {
-    this.addList();
-  }}
-  title = "Add something"
-/>
-</View>
+      <NavigationContainer>
+      <Stack.Navigator
+        initialRouteName="Home"
+      >
+        <Stack.Screen
+          name="Home"
+          component={Home}
+        />
+        <Stack.Screen
+          name="Chat"
+          component={Chat}
+        />
+      </Stack.Navigator>
+    </NavigationContainer>
     );
   }
 
@@ -143,6 +117,7 @@ addList() {
 }
 
 const styles = StyleSheet.create({
+  /*
   container: {
     flex: 1,
     justifyContent: 'center',
@@ -155,7 +130,8 @@ const styles = StyleSheet.create({
   text: {
     fontSize: 30,
   }
-  /*
+  */
+  
   container: {
     flex: 1,
     flexDirection: 'column'
@@ -175,7 +151,7 @@ const styles = StyleSheet.create({
     flex:3,
     backgroundColor: '#5d9b84'
   }
-  */
+  
 });
 
 

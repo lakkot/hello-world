@@ -12,12 +12,11 @@ export default class Chat extends React.Component {
     super()
     this.state = {
       messages: [],
-      lists: [],
+      uid: '',
       user: {
-        uid: '1322',
+        _id: '',
         name: '',
       },
-      uid: '1322',
 
     };
     
@@ -35,54 +34,46 @@ export default class Chat extends React.Component {
   if (!firebase.apps.length){
     firebase.initializeApp(firebaseConfig);
     };
-  this.referenceMessages = firebase.firestore().collection('myChatApp').doc('chat1');
-  this.referenceMessagesUser = firebase.firestore().collection('myChatApp').where("_id", "==", this.state.uid);
+  this.referenceMessages = firebase.firestore().collection('myChatApp');
+  //this.referenceMessagesUser = firebase.firestore().collection('myChatApp').where("uid", "==", this.state.uid);
   
   }
   //feed messages to state on component mount
   componentDidMount() {
-    this.setState({
-      messages: [
-        {
-          _id: this.state.uid,
-          text: `Hello ${this.props.route.params.name}! Wellcome to the chat`,
-          createdAt: new Date(),
-          user: {
-            _id: 2,
-            name: 'Chatbot',
-            avatar: 'https://placeimg.com/140/140/any',
-          },
-        },
-      ],
-      user: {
-        name: this.props.route.params.name,
-        uid: this.state.user.uid
-      }
-    })
+
     
-    this.referenceMessages = firebase.firestore().collection('myChatApp');
-    this.referenceMessagesUser = firebase.firestore().collection('myChatApp').where("_id", "==", this.state.uid);
+    
+ 
+
     // listen for collection changes for current user
-    this.unsubscribeListUser = this.referenceMessagesUser.onSnapshot(this.onCollectionUpdate);
+    //this.unsubscribeMessagesUser = this.referenceMessagesUser.onSnapshot(this.onCollectionUpdate);
+
     this.authUnsubscribe = firebase.auth().onAuthStateChanged(async (user) => {
       if (!user) {
         await firebase.auth().signInAnonymously();
       }
     
-      //update user state with currently active user data
-      this.setState({
-        uid: this.state.user.uid,
-        loggedInText: 'Hello there',
-      });
+  //update user state with currently active user data
+  this.setState({
+    uid: user.uid,
+    loggedInText: 'Hello there',
+  });
       // create a reference to the active user's documents (shopping lists)
+      this.setState({
+        user: {
+          name: this.props.route.params.name,
+          _id: this.state.uid
+        },
+      });
     });
-    
+
+this.unsubscribe = this.referenceMessages.onSnapshot(this.onCollectionUpdate);
 
   }
   
   componentWillUnmount() {
-    //this.unsubscribe();
-    this.unsubscribeListUser();
+    this.unsubscribe();
+    //this.unsubscribeMessagesUser();
  }
 
  onCollectionUpdate = (querySnapshot) => {
@@ -98,24 +89,42 @@ export default class Chat extends React.Component {
       user: {
         _id: data.user._id,
         name: data.user.name,
-        avatar: data.user.avatar,
       },
-      image: data.image || '',
     });
+    messages.sort((a, b) => b.createdAt - a.createdAt)
   });
   this.setState({
     messages,
   });
+  
+  if (this.state.messages.length === 0) {
+    var firstMessage = [
+      {
+        _id: 1,
+        text: `Wellcome to the chat App`,
+        createdAt: new Date(),
+        user: {
+          _id: 2,
+          name: 'Chatbot',
+        },
+      },
+    ];
+    this.onSend(firstMessage);
+  }
+  
 };
-
-
   //add new messages to state
   onSend(messages = []) {
-    this.setState(previousState => ({
-      messages: GiftedChat.append(previousState.messages, messages),
-    }))
-    this.addMessages();
+    this.setState(
+      (previousState) => ({
+        messages: GiftedChat.append(previousState.messages, messages),
+      }),
+      () => {
+        this.addMessages();
+      },
+    );
   }
+
 
   addMessages = () => {
     const message = this.state.messages[0];
@@ -144,8 +153,7 @@ export default class Chat extends React.Component {
   }
   
   render() {
-    console.log(this.state.messages)
-    console.log(this.state.user)
+    
     let name = this.props.route.params.name; // OR ...
     let color = this.props.route.params.color;
 
@@ -153,8 +161,6 @@ export default class Chat extends React.Component {
 
     return (
       <View style={ [ styles.container, {backgroundColor: color} ] }>
-        <Text>{this.state.loggedInText}</Text>
-
         <GiftedChat
           renderBubble={this.renderBubble.bind(this)}
           messages={this.state.messages}
@@ -174,10 +180,8 @@ export default class Chat extends React.Component {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-
+    flex: 1
   },
-
 })
 
 

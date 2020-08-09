@@ -1,5 +1,8 @@
 import React, { Component } from 'react';
-import { StyleSheet, View, TextInput, Text, Button, Alert, ScrollView } from 'react-native';
+import { StyleSheet, View, TextInput, Text, Button, Alert, ScrollView, FlatList } from 'react-native';
+
+const firebase = require('firebase');
+require('firebase/firestore');
 
 // import the screens
 import Home from './components/Start';
@@ -19,14 +22,109 @@ export default class HelloWorld extends Component {
   constructor() {
     super()
     this.state = {
-      name: ''
+      name: '',
+      lists: [],
+      user: {
+        uid: '8fVbXZs4cnXPRq8zY86X2PUHSE42',
+        name: '',
+      },
+      uid: '8fVbXZs4cnXPRq8zY86X2PUHSE42',
     };
+    
+    const firebaseConfig = {
+      apiKey: "AIzaSyBuY5bi4m_iDquRm4SGJ6ONGMw6xuYkLOA",
+      authDomain: "my-project-1530093055040.firebaseapp.com",
+      databaseURL: "https://my-project-1530093055040.firebaseio.com",
+      projectId: "my-project-1530093055040",
+      storageBucket: "my-project-1530093055040.appspot.com",
+      messagingSenderId: "404822874074",
+      appId: "1:404822874074:web:59ebf927e425dff38752e3",
+      measurementId: "G-2FR2JSWQSS"
+    }
+  
+  if (!firebase.apps.length){
+    firebase.initializeApp(firebaseConfig);
+    };
+  this.referenceShoppingLists = firebase.firestore().collection('shoppinglists').doc('list2');
+  this.referenceShoppinglistUser = firebase.firestore().collection('shoppinglists').where("uid", "==", this.state.uid);
+  
   };
 
+  componentDidMount() {
+    this.referenceShoppingLists = firebase.firestore().collection('shoppinglists');
+    //this.unsubscribe = this.referenceShoppingLists.onSnapshot(this.onCollectionUpdate);
+    this.referenceShoppinglistUser = firebase.firestore().collection('shoppinglists').where("uid", "==", this.state.uid);
+    // listen for collection changes for current user
+    this.unsubscribeListUser = this.referenceShoppinglistUser.onSnapshot(this.onCollectionUpdate);
+    this.authUnsubscribe = firebase.auth().onAuthStateChanged(async (user) => {
+      if (!user) {
+        await firebase.auth().signInAnonymously();
+      }
+    
+      //update user state with currently active user data
+      this.setState({
+        uid: user.uid,
+        loggedInText: 'Hello there',
+      });
+      // create a reference to the active user's documents (shopping lists)
+    });
+  }
+  
+   componentWillUnmount() {
+     //this.unsubscribe();
+     this.unsubscribeListUser();
+  }
+  
+
+ onCollectionUpdate = (querySnapshot) => {
+  const lists = [];
+  // go through each document
+  querySnapshot.forEach((doc) => {
+    // get the QueryDocumentSnapshot's data
+    var data = doc.data();
+    lists.push({
+      name: data.name,
+      items: data.items.toString(),
+    });
+  });
+  this.setState({
+    lists,
+  });
+};
+
+addList() {
+  this.referenceShoppingLists.add({
+    name: 'TestList',
+    items: ['eggs', 'pasta', 'veggies'],
+    uid: this.state.uid,
+  });
+}
 
   render() {
     return (
-      <NavigationContainer>
+<View style={styles.container}>
+
+<Text>{this.state.loggedInText}</Text>
+
+<Text style={styles.text}>All Shopping lists</Text>
+<FlatList
+    data={this.state.lists}
+    renderItem={({ item }) => 
+      <Text style={styles.item}>{item.name}: {item.items}</Text>}
+  />
+
+<Button 
+  onPress={() => {
+    this.addList();
+  }}
+  title = "Add something"
+/>
+</View>
+    );
+  }
+
+  /*
+        <NavigationContainer>
         <Stack.Navigator
           initialRouteName="Home"
         >
@@ -40,13 +138,24 @@ export default class HelloWorld extends Component {
           />
         </Stack.Navigator>
       </NavigationContainer>
-    );
-  }
-
+      */
 
 }
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    paddingTop: 40,     
+  },
+  item: {
+    fontSize: 20,
+    color: 'blue',
+  },
+  text: {
+    fontSize: 30,
+  }
+  /*
   container: {
     flex: 1,
     flexDirection: 'column'
@@ -66,6 +175,7 @@ const styles = StyleSheet.create({
     flex:3,
     backgroundColor: '#5d9b84'
   }
+  */
 });
 
 

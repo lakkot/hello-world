@@ -92,13 +92,14 @@ export default class Chat extends React.Component {
           });
           this.setState({ isConnected: true})
         });
-        // listen for collection changes for current user
-        this.unsubscribe = this.referenceMessages.onSnapshot(this.onCollectionUpdate);
-        //this.unsubscribeMessagesUser = this.referenceMessagesUser.onSnapshot(this.onCollectionUpdate);
+        
       } else {
         this.getMessages();
         this.setState({ isConnected: false})
       }
+      // listen for collection changes for current user
+      this.unsubscribe = this.referenceMessages.onSnapshot(this.onCollectionUpdate);
+      //this.unsubscribeMessagesUser = this.referenceMessagesUser.onSnapshot(this.onCollectionUpdate);  
     });
     
     console.log(this.state.isConnected)

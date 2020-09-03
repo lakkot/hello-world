@@ -138,6 +138,7 @@ export default class Chat extends React.Component {
       messages,
     });
     //add a welcome message if thread is empty
+    /*
     if (this.state.messages.length === 0) {
       var firstMessage = [
         {
@@ -152,6 +153,7 @@ export default class Chat extends React.Component {
       ];
       this.onSend(firstMessage);
     }
+    */
   };
 
   //add new messages to state

@@ -3,7 +3,9 @@ import KeyboardSpacer from 'react-native-keyboard-spacer';
 import { GiftedChat, Bubble, InputToolbar } from 'react-native-gifted-chat'
 import NetInfo from "@react-native-community/netinfo";
 
-import { View, Text, StyleSheet, Platform, AsyncStorage } from 'react-native';
+import { View, Text, StyleSheet, Platform, AsyncStorage, Image } from 'react-native';
+
+import CustomActions from './ActionSheet.js'
 
 const firebase = require('firebase');
 require('firebase/firestore');
@@ -19,6 +21,8 @@ export default class Chat extends React.Component {
         name: '',
       },
       isConnected: false,
+      image: null,
+      location: null,
     };
     //firabase access data
     const firebaseConfig = {
@@ -102,7 +106,8 @@ export default class Chat extends React.Component {
       //this.unsubscribeMessagesUser = this.referenceMessagesUser.onSnapshot(this.onCollectionUpdate);  
     });
     
-    console.log(this.state.isConnected)
+    console.log(this.state.isConnected);
+
     
   }
   
@@ -126,6 +131,8 @@ export default class Chat extends React.Component {
         _id: data._id,
         text: data.text.toString(),
         createdAt: data.createdAt.toDate(),
+        image: data.image,
+        location: data.location,
         user: {
           _id: data.user._id,
           name: data.user.name,
@@ -178,6 +185,8 @@ export default class Chat extends React.Component {
       text: message.text || '',
       createdAt: message.createdAt,
       user: message.user,
+      //image: message.image,
+      location: image.location
     });
   };
 
@@ -209,6 +218,32 @@ export default class Chat extends React.Component {
     }
   }
   
+  renderCustomActions = (props) => {
+    return <CustomActions {...props} /> ;
+    
+  };
+
+  renderCustomView (props) {
+    const { currentMessage} = props;
+    if (currentMessage.location) {
+      return (
+          <MapView
+            style={{width: 150,
+              height: 100,
+              borderRadius: 13,
+              margin: 3}}
+            region={{
+              latitude: currentMessage.location.latitude,
+              longitude: currentMessage.location.longitude,
+              latitudeDelta: 0.0922,
+              longitudeDelta: 0.0421,
+            }}
+          />
+      );
+    }
+    return null;
+  }
+
   render() {
     //let name = this.props.route.params.name; // OR ...
     let name = this.state.isConnected; // OR ...
@@ -217,9 +252,15 @@ export default class Chat extends React.Component {
 
     return (
       <View style={ [ styles.container, {backgroundColor: color} ] }>
+
+        {this.state.image && 
+                    <Image source={{uri: this.state.image.uri}} style={{width: 200, height: 200}} />
+                }
         <GiftedChat
+          renderCustomView={this.renderCustomView}
           renderBubble={this.renderBubble.bind(this)}
           messages={this.state.messages}
+          renderActions={this.renderCustomActions}
           renderInputToolbar={this.renderInputToolbar}
           onSend={messages => this.onSend(messages)}
           user={{

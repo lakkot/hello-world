@@ -106,7 +106,6 @@ export default class Chat extends React.Component {
       //this.unsubscribeMessagesUser = this.referenceMessagesUser.onSnapshot(this.onCollectionUpdate);  
     });
     
-    console.log(this.state.isConnected);
 
     
   }
@@ -131,8 +130,8 @@ export default class Chat extends React.Component {
         _id: data._id,
         text: data.text.toString(),
         createdAt: data.createdAt.toDate(),
-        image: data.image,
-        location: data.location,
+        //image: data.image ||  '',
+        //location: data.location || '',
         user: {
           _id: data.user._id,
           name: data.user.name,
@@ -144,23 +143,6 @@ export default class Chat extends React.Component {
     this.setState({
       messages,
     });
-    //add a welcome message if thread is empty
-    /*
-    if (this.state.messages.length === 0) {
-      var firstMessage = [
-        {
-          _id: 1,
-          text: `Wellcome to the chat App`,
-          createdAt: new Date(),
-          user: {
-            _id: 2,
-            name: 'Chatbot',
-          },
-        },
-      ];
-      this.onSend(firstMessage);
-    }
-    */
   };
 
   //add new messages to state
@@ -172,7 +154,6 @@ export default class Chat extends React.Component {
       () => {
         this.addMessages();
         this.saveMessages();
-
       },
     );
   }
@@ -185,9 +166,10 @@ export default class Chat extends React.Component {
       text: message.text || '',
       createdAt: message.createdAt,
       user: message.user,
-      //image: message.image,
-      location: image.location
+      image: message.image || '',
+      location: message.location || ''
     });
+    //console.log(message.location)
   };
 
   //add attributes to bubbles
@@ -253,16 +235,14 @@ export default class Chat extends React.Component {
     return (
       <View style={ [ styles.container, {backgroundColor: color} ] }>
 
-        {this.state.image && 
-                    <Image source={{uri: this.state.image.uri}} style={{width: 200, height: 200}} />
-                }
+
         <GiftedChat
           renderCustomView={this.renderCustomView}
           renderBubble={this.renderBubble.bind(this)}
           messages={this.state.messages}
           renderActions={this.renderCustomActions}
           renderInputToolbar={this.renderInputToolbar}
-          onSend={messages => this.onSend(messages)}
+          onSend={messages => this.onSend(messages, false)}
           user={{
             _id: this.state.uid,
             name: this.state.user.name,

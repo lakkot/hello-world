@@ -12,95 +12,67 @@ export default class CustomActions extends React.Component {
     constructor() {
         super()
     }
-    
-    /**
-     * requests permission and allows you to pick image from photo library. sends url to uploadImage and onSend
-     * @async
-     * @function pickImage
-     * 
-     */
-        // picking a photo from the photo library
-      
 
 
-        pickImage = async () => {
-          try {
-            // Requests permission to access user's gallery
-            const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL);
-      
-            if (status === 'granted') {
-              // Sets selected image to variable
-              const result = await ImagePicker.launchImageLibraryAsync({
-                mediaTypes: 'Images',
-              }).catch((e) => console.log(e));
-              // Sets image to display if user does not cancel upload
-              if (!result.cancelled) {
-                const imageUrl = await this.uploadImage(result.uri);
-                this.props.onSend({ image: imageUrl });
-              }
-            }
-          } catch (e) { console.log(e.message) }
-        }
-
-    /**
-     * requests permission to access camera roll and stores the photo as the state and returns uri string. Sends uri string to uploadImage as well as onSend function
-     * @async
-     * @function takePhoto
-     * @returns {Promise<string>} uri - sent to onSend and uploadImage
-     */
-    // taking a photo and setting it to the state
-/*
-    takePhoto = async () => {
-        const { status } = await Permissions.askAsync(Permissions.CAMERA, Permissions.CAMERA_ROLL)
-
-        if (status === 'granted') {
-            try {
-                let result = await ImagePicker.launchCameraAsync({
-                    mediaTypes: 'Images',
-                });
-            } catch (err) {
-                console.log(err);
-            }
-
+    pickImage = async () => {
+      try {
+        // Requests permission to access user's gallery
+        const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL);
+          if (status === 'granted') {
+            // Sets selected image to variable
+            const result = await ImagePicker.launchImageLibraryAsync({
+              mediaTypes: 'Images',
+            }).catch((e) => console.log(e));
+            // Sets image to display if user does not cancel upload
             if (!result.cancelled) {
-                try {
-                    const imageUrlLink = await this.uploadImage(result.uri);
-                    this.props.onSend({ image: imageUrlLink });
-                } catch (err) {
-                    console.log(err);
-                }
+              const imageUrl = await this.uploadImage(result.uri);
+              this.props.onSend({ image: imageUrl });
             }
-        }
-    }
-*/
-    /**
-     * uploading image as blob to cloud storage
-     * @async
-     * @function uploadImage
-     * @param {string}
-     * @returns {string} url
-     */
-    // uploading image to the cloud
+          }
+        } catch (e) { console.log(e.message) }
+      }
 
+
+    // taking a photo and setting it to the state
+
+    takePhoto = async () => {
+      try {
+        // Requests permission to access user's gallery
+        const { status } = await Permissions.askAsync(Permissions.CAMERA, /*Permissions.CAMERA_ROLL*/);
+          if (status === 'granted') {
+            // Sets selected image to variable
+            const result = await ImagePicker.launchCameraAsync({
+              mediaTypes: 'Images',
+            }).catch((e) => console.log(e));
+            // Sets image to display if user does not cancel upload
+            if (!result.cancelled) {
+              const imageUrl = await this.uploadImage(result.uri);
+              this.props.onSend({ image: imageUrl });
+            }
+          }
+        } catch (e) { console.log(e.message) }
+      }
+
+    // uploading image to the cloud
     uploadImage = async (uri) => {
-        const blob = await new Promise((resolve, reject) => {
-            const xhr = new XMLHttpRequest();
-            xhr.onload = (() => {
-                resolve(xhr.response);
-            });
-            xhr.onerror = ((e) => {
-                console.log(e);
-                reject(new TypeError('NETWORK REQUEST FAILED'));
-            });
-            xhr.responseType = 'blob';
-            xhr.open('GET', uri, true);
-            xhr.send(null);
-        });
+      const blob = await new Promise((resolve, reject) => {
+        const xhr = new XMLHttpRequest();
+        xhr.onload = function() {
+          resolve(xhr.response);
+        };
+        xhr.onerror = function(e) {
+          console.log(e);
+          reject(new TypeError('Network request failed'));
+        };
+        xhr.responseType = 'blob';
+        xhr.open('GET', uri, true);
+        xhr.send(null);
+      });
 
         const getImageName = uri.split('/');
         const imageArrayLength = getImageName.length - 1;
         const ref = firebase.storage().ref().child(getImageName[imageArrayLength]);
-        console.log(ref, getImageName[imageArrayLength]);
+        //console.log(ref, getImageName[imageArrayLength]);
         const snapshot = await ref.put(blob);
 
         blob.close();
@@ -110,15 +82,24 @@ export default class CustomActions extends React.Component {
         return imageURL;
     }
 
-    /**
-     * requests permission for geo coords
-     * @async
-     * @function getLocationtoSendtoWeirdos
-     * @returns {Promise<number>}
-     */
+    // get user location
 
-    // perfect naming convention
-
+    getLocation = async () => {
+      const { status } = await Permissions.askAsync(Permissions.LOCATION);
+      if(status === 'granted') {
+        let result = await Location.getCurrentPositionAsync({});
+   
+        if (result) {
+          this.props.onSend({
+            location: {
+              longitude: result.coords.longitude,
+              latitude: result.coords.latitude,
+            },
+          });
+        }
+      }
+    }
+/*
     getLocation = async () => {
         const { status } = await Permissions.askAsync(Permissions.LOCATION);
 
@@ -126,19 +107,19 @@ export default class CustomActions extends React.Component {
             try {
                 const result = await Location.getCurrentPositionAsync({});
                 if (result) {
-                    this.props.onSend({
-                        location: {
-                            longitude: result.coords.longitude,
-                            latitude: result.coords.latitude,
-                        },
-                    });
+                  this.props.onSend({
+                    location: {
+                      longitude: result.coords.longitude,
+                      latitude: result.coords.latitude,
+                    },
+                  });
                 }
             } catch (err) {
                 console.log(err);
             }
         }
     }
-
+*/
     /**
      * When + is pressed actionSheet is called
      * @function onActionPress

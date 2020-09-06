@@ -2,6 +2,7 @@ import React from 'react';
 import KeyboardSpacer from 'react-native-keyboard-spacer';
 import { GiftedChat, Bubble, InputToolbar } from 'react-native-gifted-chat'
 import NetInfo from "@react-native-community/netinfo";
+import MapView from 'react-native-maps';
 
 import { View, Text, StyleSheet, Platform, AsyncStorage, Image } from 'react-native';
 
@@ -130,8 +131,8 @@ export default class Chat extends React.Component {
         _id: data._id,
         text: data.text.toString(),
         createdAt: data.createdAt.toDate(),
-        //image: data.image ||  '',
-        //location: data.location || '',
+        image: data.image,
+        location: data.location,
         user: {
           _id: data.user._id,
           name: data.user.name,
@@ -167,7 +168,7 @@ export default class Chat extends React.Component {
       createdAt: message.createdAt,
       user: message.user,
       image: message.image || '',
-      location: message.location || ''
+      location: message.location || '',
     });
     //console.log(message.location)
   };

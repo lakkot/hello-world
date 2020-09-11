@@ -99,36 +99,10 @@ export default class CustomActions extends React.Component {
         }
       }
     }
-/*
-    getLocation = async () => {
-        const { status } = await Permissions.askAsync(Permissions.LOCATION);
 
-        if (status === 'granted') {
-            try {
-                const result = await Location.getCurrentPositionAsync({});
-                if (result) {
-                  this.props.onSend({
-                    location: {
-                      longitude: result.coords.longitude,
-                      latitude: result.coords.latitude,
-                    },
-                  });
-                }
-            } catch (err) {
-                console.log(err);
-            }
-        }
-    }
-*/
-    /**
-     * When + is pressed actionSheet is called
-     * @function onActionPress
-     * @returns {actionSheet} - with options to choose from library, take photo, or send location
-     */
     onActionPress = () => {
         const options = ['Choose From Library', 'Take picture', 'Send location', 'Cancel']
         const cancelButtonIndex = options.length - 1;
-
         this.context.actionSheet().showActionSheetWithOptions(
             {
                 options,

@@ -174,7 +174,7 @@ export default class Chat extends React.Component {
   };
 
   //add attributes to bubbles
-  renderBubble(props) {
+  renderBubble = (props) => {
     return (
       <Bubble
         {...props}
@@ -190,7 +190,7 @@ export default class Chat extends React.Component {
     )
   }
 
-  renderInputToolbar(props) {
+  renderInputToolbar = (props) => {
     if (props.isConnected === false) {
     } else {
       return(

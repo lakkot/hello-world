@@ -32,7 +32,7 @@ export default class Home extends React.Component {
               placeholder="enter your name here"
             />
             <View style={styles.colors}>
-              <Text style={{ color: '#474056' }}>Choose background color</Text>
+              <Text style={{ color: '#474056', textAlign: 'center', paddingBottom: 10 }}>Choose background color</Text>
               <View style={styles.balls}>
                 <TouchableOpacity
                   style={[styles.colorBall, styles.color1]}
@@ -103,9 +103,10 @@ const styles = StyleSheet.create({
     padding: 2,
   },
   balls: {
-    flex: 4,
+    paddingLeft: 25,
     display: 'flex',
     flexDirection: 'row',
+    justifyContent: 'center',
     width: '100%',
     borderColor: 'black',
   },

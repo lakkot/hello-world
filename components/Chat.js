@@ -10,6 +10,11 @@
 /* eslint-disable class-methods-use-this */
 /* eslint-disable react/no-unused-state */
 /* eslint-disable import/extensions */
+
+
+
+
+
 import React from 'react';
 // import KeyboardSpacer from 'react-native-keyboard-spacer';
 import { GiftedChat, Bubble, InputToolbar } from 'react-native-gifted-chat';
@@ -17,8 +22,11 @@ import NetInfo from '@react-native-community/netinfo';
 import MapView from 'react-native-maps';
 
 import {
-  View, StyleSheet, AsyncStorage,
+  View, StyleSheet, AsyncStorage, LogBox,
 } from 'react-native';
+
+console.disableYellowBox = true;
+
 
 import CustomActions from './ActionSheet.js';
 
@@ -297,8 +305,7 @@ export default class Chat extends React.Component {
   }
 
   render() {
-    // let name = this.props.route.params.name; // OR ...
-    const name = this.state.isConnected; // OR ...
+    let name = this.props.route.params.name; // OR ...
     const { color } = this.props.route.params;
     this.props.navigation.setOptions({ title: name });
 
